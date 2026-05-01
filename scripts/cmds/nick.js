@@ -9,24 +9,25 @@ module.exports = {
     countDown: 5,
     role: 1,
     shortDescription: {
-      en: "Change nickname by reply"
+      en: "রিপ্লাই দিয়ে নিকনেম পরিবর্তন"
     },
     longDescription: {
-      en: "Reply to a user and change only that user's nickname"
+      en: "কারো মেসেজে রিপ্লাই দিয়ে শুধুমাত্র ওই ইউজারের নিকনেম পরিবর্তন করবে"
     },
     category: "owner",
     guide: {
-      en: "{pn} <new nickname>\nReply to a user's message"
+      en: "{pn} <নতুন নিকনেম>\nকারো মেসেজে রিপ্লাই দিন"
     }
   },
 
   langs: {
     en: {
-      missingNickname: "Please enter a nickname.",
-      missingReply: "Reply to someone's message first.",
-      success: "Successfully changed nickname to: %1",
-      failed: "Failed to change nickname.",
-      authorError: "Author modified. File locked."
+      missingNickname: "দয়া করে একটি নিকনেম লিখুন।",
+      missingReply: "আগে কারো মেসেজে রিপ্লাই দিন।",
+      success: "সফলভাবে নিকনেম পরিবর্তন করা হয়েছে: %1",
+      failed: "নিকনেম পরিবর্তন করা যায়নি।",
+      noPermission: "এই কমান্ড ব্যবহার করার অনুমতি আপনার নেই।",
+      authorError: "Author পরিবর্তন করা হয়েছে। ফাইল লক করা আছে।"
     }
   },
 
@@ -35,6 +36,16 @@ module.exports = {
     // 🔒 Author Lock
     if (module.exports.config.author !== LOCKED_AUTHOR) {
       throw new Error(getLang("authorError"));
+    }
+
+    // ❌ Permission Check
+    const adminIDs = global.GoatBot.config.adminBot || [];
+
+    if (
+      event.senderID !== event.threadInfo.adminIDs?.find(a => a.id === event.senderID)?.id &&
+      !adminIDs.includes(event.senderID)
+    ) {
+      return message.reply(getLang("noPermission"));
     }
 
     // 📝 Nickname
