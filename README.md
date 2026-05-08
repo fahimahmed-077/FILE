@@ -70,7 +70,7 @@
 
 ### 𝐀 𝐏𝐀𝐒𝐒𝐈𝐎𝐍𝐀𝐓𝐄 𝐅𝐑𝐎𝐍𝐓𝐄𝐍𝐃 𝐃𝐄𝐕𝐄𝐋𝐎𝐏𝐄 𝐅𝐑𝐎𝐌 𝐁𝐀𝐍𝐆𝐋𝐀𝐃𝐄𝐒𝐇
 ______________________________________
-- ➪ 𝐍𝐀𝐌𝐄 : 𓆩𝐃𝐄𝐕𝐈𝐋-𝐅𝐀𝐑𝐇𝐀𝐍𓆪  
+- ➪ 𝐍𝐀𝐌𝐄 : 𓆩𝐃𝐄𝐕𝐈𝐋-𝗙𝗔𝗛𝗜𝗠𓆪  
 - ➪ 𝐑𝐄𝐋𝐈𝐆𝐈𝐎𝐍 : 𝐈𝐒𝐋𝐀𝐌  
 - ➪ 𝐀𝐃𝐃𝐑𝐄𝐒𝐒 : 𝐂𝐇𝐔𝐀𝐃𝐀𝐍𝐆𝐀  
 - ➪ 𝐄𝐃𝐔𝐂𝐀𝐓𝐈𝐎𝐍 : 𝐒𝐓𝐔𝐃𝐄𝐍𝐓  
@@ -81,14 +81,14 @@ ______________________________________
 ## 📞 𝐂𝐎𝐍𝐓𝐀𝐂𝐓 𝐌𝐄
 
 ### 🔵 𝐅𝐀𝐂𝐄𝐁𝐎𝐎𝐊
-<a href="https://www.facebook.com/MR.MUNNA.220">
+<a href="https://www.facebook.com/fahim.ahmed.raj.077">
 <img src="https://img.shields.io/badge/Facebook-ff0000?style=for-the-badge&logo=facebook&logoColor=white">
 </a>
 
 ---
 
 ### 🟢 𝐖𝐇𝐀𝐓𝐒𝐀𝐏𝐏
-<a href="https://wa.me/8801934640061">
+<a href="https://wa.me/8801771240377">
 <img src="https://img.shields.io/badge/WhatsApp-00ff00?style=for-the-badge&logo=whatsapp&logoColor=black">
 </a>
 
@@ -96,11 +96,11 @@ ______________________________________
 
 ## 🌐 𝐅𝐎𝐋𝐋𝐎𝐖 𝐌𝐄
 
-<a href="https://github.com/FARHAN-MIRAI-BOT">
+<a href="https://github.com/FAHIM-MIRAI-BOT">
 <img width="30px" src="https://cdn.jsdelivr.net/npm/simple-icons@3.0.1/icons/github.svg">
 </a>
 
-<a href="https://www.facebook.com/MR.MUNNA.220">
+<a href="https://www.facebook.com/fahim.ahmed.raj.077">
 <img width="30px" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/facebook.svg">
 </a>
 
@@ -110,7 +110,7 @@ ______________________________________
 
 ---
 
-<h2 align="center">𝐅𝐀𝐑𝐇𝐀𝐍 𝐈𝐒 𝐍𝐎𝐓 𝐀 𓆩𝐍𝐀𝐌𝐄𓆪 
+<h2 align="center">𝗙𝗔𝗛𝗜𝗠 𝐈𝐒 𝐍𝐎𝐓 𝐀 𓆩𝐍𝐀𝐌𝐄𓆪 
   
    😈 𝐈𝐓'𝐒 𝐀 𝐁𝐑𝐀𝐍𝐃 😈</h2>
  
