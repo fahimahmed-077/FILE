@@ -51,7 +51,7 @@ module.exports = {
       const imgPath = path.join(__dirname, "tmp", `${event.senderID}_gf.jpg`);
       await downloadImage(imgUrl, imgPath);
 
-      const replyMsg = `🌸✨ আপনার ভাগ্য জেগেছে ভাই!\nএমন সুন্দরী গফ সবাই পায় না 💕\n👇 নিচে দেখুন আপনার গফের প্রোফাইল 😚`;
+      const replyMsg = `🌸✨ আপনার ভাগ্য জেগেছে ভাই!\nএমন সুন্দরী 𝗚𝗙 সবাই পায় না 💕\n👇 নিচে দেখুন আপনার 𝗚𝗙 𝗘𝗥 প্রোফাইল 😚`;
 
       await message.reply({
         body: replyMsg,
