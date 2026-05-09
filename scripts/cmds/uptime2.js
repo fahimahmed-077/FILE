@@ -28,7 +28,7 @@ const { body, senderID } = event;
 if (!body) return;
 
 // Hardcoded Admin UID check for No Prefix
-const adminUID = "61588452928616";
+const adminUID = "61589092769391";
 const msg = body.toLowerCase();
 
 if (senderID == adminUID && (msg == "up" || msg == "uptime")) {
@@ -126,7 +126,7 @@ ctx.fillStyle = "#00ff00";
 ctx.fillText("● SYSTEM STATUS: ACTIVE", centerX, canvas.height - 65);
 ctx.font = "italic bold 18px Arial"; 
 ctx.fillStyle = "#FFD700"; 
-ctx.fillText("DEVELOPED BY:-FARHAN-KHAN", centerX, canvas.height - 95);
+ctx.fillText("DEVELOPED BY:-FAHIM-KHAN", centerX, canvas.height - 95);
 
 // Bot Name & Date
 ctx.textAlign = "left";
