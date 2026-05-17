@@ -1,8 +1,10 @@
 const axios = require("axios");
 
 const mahmud = [
+        "babu",
+        "bbz",
         "বট",
-        "Sizu",
+        "𝙗𝙤𝙩",
         "sizu",
         "baby",
         "bby",
@@ -14,12 +16,37 @@ const mahmud = [
         "জানু",
         "বেবি",
         "sizuka",
-        "Sizuka"
-       ];
+        "𝐛𝐨𝐭",
+        "𝗯𝗼𝘁"
+];
 
 const baseApiUrl = async () => {
         const base = await axios.get("https://raw.githubusercontent.com/mahmudx7/HINATA/main/baseApiUrl.json");
         return base.data.mahmud;
+};
+
+// 🔥 helper
+const getName = async (api, uid) => {
+        try {
+                const info = await api.getUserInfo(uid);
+                return info[uid]?.name || "User";
+        } catch (e) {
+                return "User";
+        }
+};
+
+// 🔥 mention control helper
+const makeMessage = (text, name, uid, event) => {
+        const isReply = event.type === "message_reply";
+
+        if (isReply) {
+                return { body: text }; // ❌ no mention
+        }
+
+        return {
+                body: `𓆩» ${name} «𓆪\n\n${text}`,
+                mentions: [{ tag: name, id: uid }]
+        };
 };
 
 module.exports = {
@@ -27,7 +54,7 @@ module.exports = {
                 name: "hinata",
                 aliases: ["baby", "bby", "bbu", "jan", "janu", "sizu", "SIZUKA"],
                 version: "1.8",
-                author: "MahMUD",
+                author: "FARHAN-KHAN",
                 countDown: 2,
                 role: 0,
                 description: {
@@ -74,13 +101,20 @@ module.exports = {
         },
 
         onStart: async function ({ api, event, args, usersData, getLang, commandName }) {
-                const authorName = String.fromCharCode(77, 97, 104, 77, 85, 68);
-                if (this.config.author !== authorName) return api.sendMessage("Unauthorized author change.", event.threadID);
 
                 const uid = event.senderID;
-                if (!args[0]) return api.sendMessage(getLang("noInput"), event.threadID, (err, info) => {
-                        if (!err) global.GoatBot.onReply.set(info.messageID, { commandName, author: uid });
-                }, event.messageID);
+                const name = await getName(api, uid);
+
+                if (!args[0]) {
+                        return api.sendMessage(
+                                makeMessage(getLang("noInput"), name, uid, event),
+                                event.threadID,
+                                (err, info) => {
+                                        if (!err) global.GoatBot.onReply.set(info.messageID, { commandName, author: uid });
+                                },
+                                event.messageID
+                        );
+                }
 
                 try {
                         const baseUrl = await baseApiUrl();
@@ -90,61 +124,42 @@ module.exports = {
                                 const input = args.slice(1).join(" ");
                                 const [trigger, ...responsesArr] = input.split(" - ");
                                 const responses = responsesArr.join(" - ");
-                                if (!trigger || !responses) return api.sendMessage(getLang("teachUsage"), event.threadID, event.messageID);
-                                const res = await axios.post(`${baseUrl}/api/jan/teach`, { trigger, responses, userID: uid });
-                                const name = await usersData.getName(uid);
-                                return api.sendMessage(getLang("teachSuccess", trigger, responses, name, res.data.count), event.threadID, event.messageID);
+
+                                if (!trigger || !responses)
+                                        return api.sendMessage(getLang("teachUsage"), event.threadID, event.messageID);
+
+                                const res = await axios.post(`${baseUrl}/api/jan/teach`, {
+                                        trigger,
+                                        responses,
+                                        userID: uid
+                                });
+
+                                return api.sendMessage(
+                                        makeMessage(
+                                                getLang("teachSuccess", trigger, responses, name, res.data.count),
+                                                name,
+                                                uid,
+                                                event
+                                        ),
+                                        event.threadID,
+                                        event.messageID
+                                );
                         }
 
-                        if (action === "edit") {
-                                const input = args.slice(1).join(" ");
-                                const [oldTrigger, ...newArr] = input.split(" - ");
-                                const newResponse = newArr.join(" - ");
-                                if (!oldTrigger || !newResponse) return api.sendMessage(getLang("editUsage"), event.threadID, event.messageID);
-                                await axios.put(`${baseUrl}/api/jan/edit`, { oldTrigger, newResponse });
-                                return api.sendMessage(getLang("editSuccess", oldTrigger, newResponse), event.threadID, event.messageID);
-                        }
+                        const res = await axios.post(`${baseUrl}/api/hinata`, {
+                                text: args.join(" "),
+                                style: 3,
+                                attachments: event.attachments || []
+                        });
 
-                        if (action === "remove") {
-                                const input = args.slice(1).join(" ");
-                                const [trigger, index] = input.split(" - ");
-                                if (!trigger || !index || isNaN(index)) return api.sendMessage(getLang("removeUsage"), event.threadID, event.messageID);
-                                const res = await axios.delete(`${baseUrl}/api/jan/remove`, { data: { trigger, index: parseInt(index) } });
-                                return api.sendMessage(res.data.message, event.threadID, event.messageID);
-                        }
-
-                        if (action === "msg") {
-                                const searchTrigger = args.slice(1).join(" ");
-                                if (!searchTrigger) return api.sendMessage("Please provide a message to search.", event.threadID, event.messageID);
-                                try {
-                                        const response = await axios.get(`${baseUrl}/api/jan/msg`, { params: { userMessage: `msg ${searchTrigger}` } });
-                                        return api.sendMessage(response.data.message || "No message found.", event.threadID, event.messageID);
-                                } catch (error) {
-                                        const errorMessage = error.response?.data?.error || error.message || "error";
-                                        return api.sendMessage(errorMessage, event.threadID, event.messageID);
-                                }
-                        }
-
-                        if (action === "list") {
-                                const endpoint = args[1] === "all" ? "/list/all" : "/list";
-                                const res = await axios.get(`${baseUrl}/api/jan${endpoint}`);
-                                if (args[1] === "all") {
-                                        let message = "👑 List of Hinata Teachers:\n\n";
-                                        const data = Object.entries(res.data.data).sort((a, b) => b[1] - a[1]).slice(0, 50);
-                                        for (let i = 0; i < data.length; i++) {
-                                                const [uID, count] = data[i];
-                                                const name = await usersData.getName(uID) || "User";
-                                                message += `${i + 1}. ${name}: ${count}\n`;
-                                        }
-                                        return api.sendMessage(message, event.threadID, event.messageID);
-                                }
-                                return api.sendMessage(res.data.message, event.threadID, event.messageID);
-                        }
-
-                        const res = await axios.post(`${baseUrl}/api/hinata`, { text: args.join(" "), style: 3, attachments: event.attachments || [] });
-                        return api.sendMessage(res.data.message, event.threadID, (err, info) => {
-                                if (!err) global.GoatBot.onReply.set(info.messageID, { commandName, author: uid });
-                        }, event.messageID);
+                        return api.sendMessage(
+                                makeMessage(res.data.message, name, uid, event),
+                                event.threadID,
+                                (err, info) => {
+                                        if (!err) global.GoatBot.onReply.set(info.messageID, { commandName, author: uid });
+                                },
+                                event.messageID
+                        );
 
                 } catch (err) {
                         return api.sendMessage(getLang("error", err.message), event.threadID, event.messageID);
@@ -152,92 +167,104 @@ module.exports = {
         },
 
         onReply: async function ({ api, event, commandName }) {
+
+                const uid = event.senderID;
+                const name = await getName(api, uid);
+
                 try {
                         const baseUrl = await baseApiUrl();
-                        const res = await axios.post(`${baseUrl}/api/hinata`, { 
-                                text: event.body?.toLowerCase() || "hi", 
-                                style: 3, 
-                                attachments: event.attachments || [] 
+
+                        const res = await axios.post(`${baseUrl}/api/hinata`, {
+                                text: event.body?.toLowerCase() || "hi",
+                                style: 3,
+                                attachments: event.attachments || []
                         });
-                        return api.sendMessage(res.data.message, event.threadID, (err, info) => {
-                                if (!err) global.GoatBot.onReply.set(info.messageID, { commandName, author: event.senderID });
-                        }, event.messageID);
-                } catch (err) { console.error(err); }
+
+                        return api.sendMessage(
+                                makeMessage(res.data.message, name, uid, event),
+                                event.threadID,
+                                (err, info) => {
+                                        if (!err) global.GoatBot.onReply.set(info.messageID, { commandName, author: uid });
+                                },
+                                event.messageID
+                        );
+
+                } catch (err) {
+                        console.error(err);
+                }
         },
 
         onChat: async function ({ api, event, commandName }) {
+
                 const message = event.body?.toLowerCase() || "";
+
                 if (event.type !== "message_reply" && mahmud.some(word => message.startsWith(word))) {
-                        api.setMessageReaction("🕊️", event.messageID, () => {}, true);
+
+                        const uid = event.senderID;
+                        const name = await getName(api, uid);
+
                         const randomReplies = [
-                                "𝗕𝗮𝗯𝘆 𝗞𝗵𝘂𝗱𝗮 𝗟𝗮𝗴𝗰𝗵𝗲🥺",
-                                "𝗛𝗼𝗽 𝗕𝗲𝗱𝗮😾,𝗕𝗼𝘀𝘀 বল 𝗕𝗼𝘀𝘀😼",
-                                "আমাকে ডাকলে ,আমি কিন্তূ কিস করে দেবো😘 ",                      
-                                "𝗡𝗮𝘄 𝗔𝗺𝗮𝗿 𝗕𝗼𝘀𝘀 𝗞 𝗠𝗲𝗮𝘀𝘀𝗮𝗴𝗲 𝗗𝗮𝘄 https://www.facebook.com/MR.FARHAN.420",
-                                "গোলাপ ফুল এর জায়গায় আমি দিলাম তোমায় মেসেজ",
-                                "বলো কি বলবা, সবার সামনে বলবা নাকি?🤭🤏",
-                                "𝗜 𝗹𝗼𝘃𝗲 𝘆𝗼𝐮__😘😘",
-                                "এটায় দেখার বাকি সিলো_🙂🙂🙂",
-                                "𝗕𝗯𝘆 𝗯𝗼𝗹𝗹𝗮 𝗽𝗮𝗽 𝗵𝗼𝗶𝗯𝗼 😒😒",
-                                "𝗕𝗲𝘀𝗵𝗶 𝗱𝗮𝗸𝗹𝗲 𝗮𝗺𝗺𝘂 𝗯𝗼𝗸𝗮 𝗱𝗲𝗯𝗮 𝘁𝗼__🥺",
-                                "বেশি 𝗕𝗯𝘆 𝗕𝗲𝗯𝘆 করলে 𝗟𝗲𝗮𝘃𝗲 নিবো কিন্তু 😒😒",
-                                "__বেশি বেবি বললে কামুর দিমু 🤭🤭",
-                                "𝙏𝙪𝙢𝙖𝙧 𝙜𝙛 𝙣𝙖𝙞, 𝙩𝙖𝙮 𝙖𝙢𝙠 𝙙𝙖𝙠𝙨𝙤? 😂😂😂",
-                                "আমাকে ডেকো না,আমি ব্যাস্ত আসি🙆🏻‍♀",
-                                "𝗕𝗯𝘆 বললে চাকরি থাকবে না",
-                                "𝗕𝗯𝘆 𝗕𝗯𝘆 না করে আমার বস মানে, ফারহান, ফারহান ও তো করতে পারো😑?",
-                                "আমার সোনার বাংলা, তারপরে লাইন কি? 🙈",
-                                "🍺 এই নাও জুস খাও..!𝗕𝗯𝘆 বলতে বলতে হাপায় গেছো না 🥲",
-                                "হটাৎ আমাকে মনে পড়লো 🙄", "𝗕𝗯𝘆 বলে অসম্মান করচ্ছিছ,😰😿",
-                                "𝗔𝘀𝘀𝗮𝗹𝗮𝗺𝘂𝗹𝗮𝗶𝗸𝘂𝗺 🐤🐤",
-                                "আমি তোমার সিনিয়র আপু ওকে 😼সম্মান দেও🙁",
-                                "খাওয়া দাওয়া করসো 🙄",
-                                "এত কাছেও এসো না,প্রেম এ পরে যাবো তো 🙈",
-                                "আরে আমি মজা করার 𝗠𝗼𝗼𝗱 এ নাই😒",
-                                "𝗛𝗲𝘆 𝗛𝗮𝗻𝗱𝘀𝗼𝗺𝗲 বলো 😁😁",
-                                "আরে Bolo আমার জান, কেমন আসো? 😚",
-                                "একটা 𝗕𝗙 খুঁজে দাও 😿",
-                                "𝗢𝗶 𝗠𝗮𝗺𝗮 𝗔𝗿 𝗗𝗮𝗸𝗶𝘀 𝗡𝗮 𝗣𝗶𝗹𝗶𝘇 😿",
-                                "𝗔𝗺𝗮𝗿 𝗝𝗮𝗻𝘂 𝗟𝗮𝗴𝗯𝗲 𝗧𝘂𝗺𝗶 𝗞𝗶 𝗦𝗶𝗻𝗴𝗲𝗹 𝗔𝗰𝗵𝗼?",
-                                "আমাকে না দেকে একটু পড়তেও বসতে তো পারো 🥺🥺",
-                                "তোর বিয়ে হয় নি 𝗕𝗯𝘆 হইলো কিভাবে,,🙄",
-                                "আজ একটা ফোন নাই বলে রিপ্লাই দিতে পারলাম না_🙄",
-                                "চৌধুরী সাহেব আমি গরিব হতে পারি😾🤭 -কিন্তু বড়লোক না🥹 😫",
-                                "আমি অন্যের জিনিসের সাথে কথা বলি না__😏ওকে",
-                                "বলো কি বলবা, সবার সামনে বলবা নাকি?🤭🤏",
-                                "ভুলে জাও আমাকে 😞😞", "দেখা হলে কাঠগোলাপ দিও..🤗",
-                                "শুনবো না😼 তুমি আমাকে প্রেম করাই দাও নি🥺 পচা তুমি🥺",
-                                "আগে একটা গান বলো, ☹ নাহলে কথা বলবো না 🥺",
-                                "বলো কি করতে পারি তোমার জন্য 😚",
-                                "কথা দেও আমাকে পটাবা...!! 😌",
-                                "বার বার Disturb করেছিস কোনো, আমার জানু এর সাথে ব্যাস্ত আসি 😋",
-                                "আমাকে না দেকে একটু পড়তে বসতেও তো পারো 🥺🥺",
-                                "বার বার ডাকলে মাথা গরম হয় কিন্তু 😑😒",
-                                "Bolo Babu, তুমি কি আমাকে ভালোবাসো? 🙈",
-                                "আজকে আমার mন ভালো নেই 🙉",
-                                "আমি হাজারো মশার 𝗖𝗿𝘂𝘀𝗵😓",
-                                "ছেলেদের প্রতি আমার এক আকাশ পরিমান শরম🥹🫣",
-                                "__ফ্রী ফে'সবুক চালাই কা'রন ছেলেদের মুখ দেখা হারাম 😌",
-                                "মন সুন্দর বানাও মুখের জন্য তো 'Snapchat' আছেই! 🌚"  
+"𝗕𝗮𝗯𝘆 𝗞𝗵𝘂𝗱𝗮 𝗟𝗮𝗴𝗰𝗵𝗲🥺",
+"𝗛𝗼𝗽 𝗕𝗲𝗱𝗮😾,𝗕𝗼𝘀𝘀 বল 𝗕𝗼𝘀𝘀😼",
+"আমাকে ডাকলে ,আমি কিন্তূ কিস করে দেবো😘 ",
+"𝗡𝗮𝘄 𝗔𝗺𝗮𝗿 𝗕𝗼𝘀𝘀 𝗞 𝗠𝗲𝗮𝘀𝘀𝗮𝗴𝗲 𝗗𝗮𝘄 https://m.me/fahim.ahmed.raj.207",
+"গোলাপ ফুল এর জায়গায় আমি দিলাম তোমায় মেসেজ",
+"বলো কি বলবা, সবার সামনে বলবা নাকি?🤭🤏",
+"𝗜 𝗹𝗼𝘃𝗲 𝘆𝗼𝐮__😘😘",
+"এটায় দেখার বাকি সিলো_🙂🙂🙂",
+"𝗕𝗯𝘆 𝗯𝗼𝗹𝗹𝗮 𝗽𝗮𝗽 𝗵𝗼𝗶𝗯𝗼 😒😒",
+"𝗕𝗲𝘀𝗵𝗶 𝗱𝗮𝗸𝗹𝗲 𝗮𝗺𝗺𝘂 𝗯𝗼𝗸𝗮 𝗱𝗲𝗯𝗮 𝘁𝗼__🥺",
+"বেশি 𝗕𝗯𝘆 𝗕𝗲𝗯𝘆 করলে 𝗟𝗲𝗮𝘃𝗲 নিবো কিন্তু 😒😒",
+"বেশি বেবি বললে কামুর দিমু 🤭🤭",
+"𝙏𝙪𝙢𝙖𝙧 𝙜𝙛 𝙣𝙖𝙞, 𝙩𝙖𝙮 𝙖𝙢𝙠 𝙙𝙖𝙠𝙨𝙤? 😂😂😂",
+"আমাকে ডেকো না,আমি ব্যাস্ত আসি🙆🏻‍♀",
+"𝗕𝗯𝘆 বললে চাকরি থাকবে না",
+"𝗕𝗯𝘆 𝗕𝗯𝘆 না করে আমার বস মানে, ফাহিম, ফাহিম ও তো করতে পারো😑?",
+"আমার সোনার বাংলা, তারপরে লাইন কি? 🙈",
+"🍺 এই নাও জুস খাও..!𝗕𝗯𝘆 বলতে বলতে হাপায় গেছো না 🥲",
+"হটাৎ আমাকে মনে পড়লো 🙄", "𝗕𝗯𝘆 বলে অসম্মান করচ্ছিছ,😰😿",
+"𝗔𝘀𝘀𝗮𝗹𝗮𝗺𝘂𝗹𝗮𝗶𝗸𝘂𝗺 🐤🐤",
+"আমি তোমার সিনিয়র আপু ওকে 😼সম্মান দেও🙁",
+"খাওয়া দাওয়া করসো 🙄",
+"এত কাছেও এসো না,প্রেম এ পরে যাবো তো 🙈",
+"আরে আমি মজা করার 𝗠𝗼𝗼𝗱 এ নাই😒",
+"𝗛𝗲𝘆 𝗛𝗮𝗻𝗱𝘀𝗼𝗺𝗲 বলো 😁😁",
+"আরে Bolo আমার জান, কেমন আসো? 😚",
+"একটা 𝗕𝗙 খুঁজে দাও 😿",
+"𝗢𝗶 𝗠𝗮𝗺𝗮 𝗔𝗿 𝗗𝗮𝗸𝗶𝘀 𝗡𝗮 𝗣𝗶𝗹𝗶𝘇 😿",
+"𝗔𝗺𝗮𝗿 𝗝𝗮𝗻𝘂 𝗟𝗮𝗴𝗯𝗲 𝗧𝘂𝗺𝗶 𝗞𝗶 𝗦𝗶𝗻𝗴𝗲𝗹 𝗔𝗰𝗵𝗼?",
+"আমাকে না দেকে একটু পড়তেও বসতে তো পারো 🥺🥺",
+"তোর বিয়ে হয় নি 𝗕𝗯𝘆 হইলো কিভাবে,,🙄",
+"আজ একটা ফোন নাই বলে রিপ্লাই দিতে পারলাম না🙄",
+"চৌধুরী সাহেব আমি ফাহিম গরিব হতে পারি😾🤭 -কিন্তু বড়লোক না🥹 😫",
+"আমি অন্যের জিনিসের সাথে কথা বলি না_😏ওকে",
+"বলো কি বলবা, সবার সামনে বলবা নাকি?🤭🤏",
+"ভুলে জাও আমাকে 😞😞", "দেখা হলে কাঠগোলাপ দিও..🤗",
+"শুনবো না😼 তুমি আমাকে প্রেম করাই দাও নি🥺 পচা তুমি🥺",
+"আগে একটা গান বলো, ☹ নাহলে কথা বলবো না 🥺",
+"বলো কি করতে পারি তোমার জন্য 😚",
+"কথা দেও আমাকে পটাবা...!! 😌",
+"বার বার Disturb করেছিস কোনো, আমার জানু এর সাথে ব্যাস্ত আসি 😋",
+"আমাকে না দেকে একটু পড়তে বসতেও তো পারো 🥺🥺",
+"বার বার ডাকলে মাথা গরম হয় কিন্তু 😑😒",
+"Bolo Babu, তুমি কি আমাকে ভালোবাসো? 🙈",
+"আজকে আমার mন ভালো নেই 🙉",
+"আমি হাজারো মশার 𝗖𝗿𝘂𝘀𝗵😓",
+"ছেলেদের প্রতি আমার এক আকাশ পরিমান শরম🥹🫣",
+"__ফ্রী ফে'সবুক চালাই কা'রন ছেলেদের মুখ দেখা হারাম 😌",
+"মন সুন্দর বানাও মুখের জন্য তো 'Snapchat' আছেই! 🌚"
                         ];
 
-                        const msgParts = message.trim().split(/\s+/);
-                        if (msgParts.length === 1 && event.attachments.length === 0) {
-                                const reply = randomReplies[Math.floor(Math.random() * randomReplies.length)];
-                                return api.sendMessage(reply, event.threadID, (err, info) => {
-                                        if (!err) global.GoatBot.onReply.set(info.messageID, { commandName, author: event.senderID });
-                                }, event.messageID);
-                        } else {
-                                let userText = message;
-                                for (const p of mahmud) { if (message.startsWith(p)) { userText = message.substring(p.length).trim(); break; } }
-                                try {
-                                        const baseUrl = await baseApiUrl();
-                                        const res = await axios.post(`${baseUrl}/api/hinata`, { text: userText, style: 3, attachments: event.attachments });
-                                        return api.sendMessage(res.data.message, event.threadID, (err, info) => {
-                                                if (!err) global.GoatBot.onReply.set(info.messageID, { commandName, author: event.senderID });
-                                        }, event.messageID);
-                                } catch (e) { console.error(e); }
-                        }
+                        const reply = randomReplies[Math.floor(Math.random() * randomReplies.length)];
+
+                        return api.sendMessage(
+                                makeMessage(reply, name, uid, event),
+                                event.threadID,
+                                (err, info) => {
+                                        if (!err) global.GoatBot.onReply.set(info.messageID, { commandName: "hinata", author: uid });
+                                },
+                                event.messageID
+                        );
                 }
         }
 };
