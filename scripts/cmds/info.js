@@ -71,10 +71,10 @@ module.exports = {
   onStart: async function ({ message }) {
 
     // ================= OWNER INFO =================
-    const ownerName = "FARHAN-KHAN";
-    const ownerAge = "20+";
-    const ownerFB = "https://m.me/MR.FARHAN.420";
-    const ownerNumber = "01934640061";
+    const ownerName = "FAHIM-KHAN";
+    const ownerAge = "17+";
+    const ownerFB = "https://m.me/fahim.ahmed.raj.207";
+    const ownerNumber = "01771240377";
     const status = "Active";
 
     // ================= BOT INFO =================
@@ -120,10 +120,10 @@ module.exports = {
 ‎║🚻>𝗚𝗲𝗻𝗱𝗲𝗿:-  [>𝗠𝗮𝗹𝗲<]
 ‎╠══════════════════╣
 ‎║🌐>𝗙𝗮𝗰𝗲𝗯𝗼𝗼𝗸:-↓
-‎║→https://www.facebook.com/fahim.ahmed.raj.077                           
+‎║→https://www.facebook.com/fahim.ahmed.raj.207                           
 ‎║
 ‎║💬>𝗠𝗲𝘀𝘀𝗲𝗻𝗴𝗲𝗿:-↓
-‎║ [>m.me/fahim.ahmed.raj.077<]
+‎║ [>m.me/fahim.ahmed.raj.207<]
 ‎║
 ‎║📞>𝗪𝗵𝗮𝘁𝘀𝗔𝗽𝗽:-↓
 ‎║ [>wa.me/+8801771240377<]        
