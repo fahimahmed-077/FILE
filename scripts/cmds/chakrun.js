@@ -16,9 +16,9 @@ module.exports = {
   },
 
 /* --- [ 🔐 FILE_CREATOR_INFORMATION ] ---
- * 🤖 BOT NAME: FARHAN BOT
- * 👤 OWNER: FARHAN-KHAN
- * 📍 LOCATION: CHUADANGA, BANGLADESH
+ * 🤖 BOT NAME: FAHIM BOT
+ * 👤 OWNER: FAHIM-KHAN
+ * 📍 LOCATION: DHAKA, BANGLADESH
  * 🛠️ PROJECT: FARHAN BOT PROJECT (2026)
  * --------------------------------------- */
 
