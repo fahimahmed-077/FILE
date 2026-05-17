@@ -112,7 +112,7 @@ module.exports = {
 		const time = moment().tz("Asia/Dhaka").format("hh:mm A");
 		const date = moment().tz("Asia/Dhaka").format("DD MMM YYYY");
 
-		const owner = global.GoatBot.config.adminName || "𝐅𝐀𝐑𝐇𝐀𝐍";
+		const owner = global.GoatBot.config.adminName || "𝗙𝗔𝗛𝗜𝗠";
 
 		return message.reply({
 			body:
