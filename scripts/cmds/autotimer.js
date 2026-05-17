@@ -16,7 +16,7 @@ module.exports.config = {
 module.exports.onLoad = async function ({ api }) {
 
   // 🔒 author lock check
-  if (module.exports.config.author !== "ꜰᴀʀʜᴀɴ-ᴋʜᴀɴ") {
+  if (module.exports.config.author !== "𝗙𝗔𝗛𝗜𝗠-𝗞𝗛𝗔𝗡") {
     console.error("❌ Author নাম পরিবর্তন করা হয়েছে। ফাইল চলবে না।");
     return process.exit(1);
   }
