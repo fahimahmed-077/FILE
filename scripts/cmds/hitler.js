@@ -32,7 +32,7 @@ module.exports = {
                 bn: {
                         noTarget: "× বেবি, কাউকে মেনশন দাও, রিপ্লাই করো অথবা UID দাও! 🎖",
                         success: "এই নাও তোমার হিটলার ছবি বেবি! 🐸",
-                        error: "× সমস্যা হয়েছে: %1। প্রয়োজনে Contact MahMUD।"
+                        error: "× সমস্যা হয়েছে: %1। প্রয়োজনে Contact 𝗙𝗔𝗛𝗜𝗠।"
                 },
                 en: {
                         noTarget: "× Baby, mention, reply, or provide UID of the target! 🎖",
